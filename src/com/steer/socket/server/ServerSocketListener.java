@@ -13,11 +13,10 @@ import java.net.Socket;
 public class ServerSocketListener implements Runnable{
 
     private ServerSocket serverSocket;
-
+    int port = 23000;
     @Override
     public void run() {
         try {
-            int port = 23000;
             serverSocket = new ServerSocket(port);
             System.out.println("开启端口号为:"+port+"的socket服务");
             while(true){
