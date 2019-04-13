@@ -13,7 +13,7 @@ import java.net.Socket;
  * @Date: 2018-09-26 19:19
  */
 public class SocketClient {
-    private String host = "192.168.2.180";
+    private String host = "192.168.2.171";
     private int port = 23000;
 
     public void run(){
@@ -24,7 +24,11 @@ public class SocketClient {
             //向服务端写入数据
             socket.getOutputStream().write(new byte[]{0x01,0x02,0x02,0x00,0x01,0x00,0x00});
             socket.shutdownOutput();
-//			Thread.sleep(1000);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
             //接收服务端返回的数据
             int len = 0;
