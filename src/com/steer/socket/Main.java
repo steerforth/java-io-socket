@@ -1,9 +1,11 @@
 package com.steer.socket;
 
-import com.steer.socket.client.SocketClient;
-import com.steer.socket.client.UdpSocketClient;
-import com.steer.socket.server.ServerSocketListener;
-import com.steer.socket.server.UpdSocketSender;
+import com.steer.socket.nio.NIOClient;
+import com.steer.socket.nio.NIOServer;
+import com.steer.socket.udp.UdpSocketClient;
+import com.steer.socket.udp.UpdSocketSender;
+
+import java.io.IOException;
 
 /**
  * @Program: java-io-socket
@@ -13,9 +15,9 @@ import com.steer.socket.server.UpdSocketSender;
  */
 public class Main {
 
-    public static void main(String[] args) {
-        //-------1.开启socket服务端口-------
-//        new Thread(new ServerSocketListener()).start();
+    public static void main(String[] args) throws IOException {
+        //-------1.开启BIO socket服务端口-------
+//        new Thread(new BIOServerSocketListener()).start();
 //
 //        try {
 //            Thread.sleep(3000);
@@ -23,19 +25,34 @@ public class Main {
 //            e.printStackTrace();
 //        }
 //
-//        SocketClient client = new SocketClient();
+//        BIOSocketClient client = new BIOSocketClient();
 //        client.run();
 
 
         //---------2.开启udp socket服务端口 47808--------
-        new Thread(new UdpSocketClient(47808)).start();
+//        new Thread(new UdpSocketClient(11111)).start();
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//        UpdSocketSender sender = new UpdSocketSender(11111,"192.168.2.255");
+//        sender.sendMsg("你号,dfdf");
+
+        //-------3.开启NIO socket服务端口-------
+        NIOServer server = new NIOServer();
+        server.initServer(20000);
+        server.listen();
+
         try {
-            Thread.sleep(2000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        UpdSocketSender sender = new UpdSocketSender(11111,"192.168.2.255");
-        sender.sendMsg("你号,dfdf");
+        NIOClient client = new NIOClient();
+        client.initClient("localhost",20000);
+        client.listen();
     }
 }

@@ -1,4 +1,4 @@
-package com.steer.socket.server;
+package com.steer.socket.udp;
 
 import java.io.IOException;
 import java.net.*;

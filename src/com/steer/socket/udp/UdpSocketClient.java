@@ -1,11 +1,9 @@
-package com.steer.socket.client;
+package com.steer.socket.udp;
 
 import com.steer.socket.Util.HexUtil;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketException;
+import java.net.*;
 import java.util.Date;
 
 public class UdpSocketClient implements Runnable{
@@ -21,6 +19,7 @@ public class UdpSocketClient implements Runnable{
         while (!terminated){
             DatagramSocket socket = null;
             try {
+//                InetAddress address = Inet4Address.getByName("192.168.2.171");
                 socket = new DatagramSocket(port);
                 byte[] buf = new byte[1024];
                 DatagramPacket datagramPacket = new DatagramPacket(buf, buf.length); // 1024
