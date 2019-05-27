@@ -2,12 +2,14 @@ package com.steer.socket.nio;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.nio.channels.*;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 
-public class NIOServer {
+public class NIOServer implements Runnable{
     //通道管理器
     private Selector selector;
 
@@ -24,55 +26,79 @@ public class NIOServer {
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
     }
 
-    public void listen() throws IOException{
-        System.out.println("服务端启动成功");
+    @Override
+    public void run() {
+        System.out.println("服务端轮询启动成功！");
         //轮询访问selector
         while (true){
             //当注册事件到达时，方法返回；否则，该方法会一直阻塞
-            selector.select();
-            Iterator<SelectionKey> iterator = this.selector.selectedKeys().iterator();
-            while (iterator.hasNext()){
-                SelectionKey key = iterator.next();
-                //删除已选的key，防止重复处理
-                iterator.remove();
-                //客户端请求的连接事件
-                if (key.isAcceptable()){
-                    ServerSocketChannel server = (ServerSocketChannel) key.channel();
-                    SocketChannel channel = server.accept();
-                    channel.configureBlocking(false);
+            try {
+                this.selector.select(1000);
+                Iterator<SelectionKey> iterator = this.selector.selectedKeys().iterator();
+                while (iterator.hasNext()){
+                    SelectionKey key = iterator.next();
+                    //删除已选的key，防止重复处理
+                    iterator.remove();
 
-                    channel.write(ByteBuffer.wrap(new String("像客户端发送一条信息").getBytes("utf-8")));
-                    channel.register(this.selector,SelectionKey.OP_READ);
-                    //获取可读事件
-                }else if(key.isReadable()){
-                    read(key);
+                    handler(key);
+
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+
         }
     }
+
+    private void handler(SelectionKey key) throws IOException {
+        // 客户端请求连接事件
+        if (key.isAcceptable()) {
+            handlerAccept(key);
+            // 获得了可读的事件
+        } else if (key.isReadable()) {
+            handlerRead(key);
+        }
+    }
+
+    private void handlerAccept(SelectionKey key) throws IOException {
+        ServerSocketChannel server = (ServerSocketChannel) key.channel();
+        SocketChannel channel = server.accept();
+        channel.configureBlocking(false);
+        System.out.println("收到了来自IP:"+channel.socket().getInetAddress().getHostAddress()+"的连接请求");
+        channel.write(ByteBuffer.wrap(new String("您已连接成功！").getBytes("utf-8")));
+        channel.register(this.selector,SelectionKey.OP_READ);
+    }
+
 
     /**
      * 处理客户端发来的信息 事件
      * @param key
      */
-    private void read(SelectionKey key) throws IOException {
+    private void handlerRead(SelectionKey key) throws IOException {
         //
         SocketChannel channel = (SocketChannel) key.channel();
         //创建读取的缓冲区
-        ByteBuffer buffer = ByteBuffer.allocate(10);
-        channel.read(buffer);
+        ByteBuffer buffer = ByteBuffer.allocate(100);
+        int size = channel.read(buffer);
+        if (size <= 0){
+            key.cancel();
+            System.out.println("服务端关闭了通道："+channel.socket().toString());
+        }else{
+            byte[] data = buffer.array();
+            String msg = new String(data).trim();
+            System.out.println("服务器收到信息："+msg);
+            //回传消息给客户端
+            channel.write(ByteBuffer.wrap(("服务端已读消息内容:"+msg).getBytes("utf-8")));
+        }
 
-        byte[] data = buffer.array();
-        String msg = new String(data).trim();
-        System.out.println("服务器收到信息："+msg);
-        //回传消息给客户端
-        channel.write(ByteBuffer.wrap(("已收到你发送的消息内容:"+msg).getBytes("utf-8")));
     }
 
 
     public static void main(String[] args) throws IOException {
         NIOServer server = new NIOServer();
         server.initServer(20000);
-        server.listen();
+        new Thread(server).start();
     }
+
+
 }

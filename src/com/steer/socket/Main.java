@@ -5,7 +5,10 @@ import com.steer.socket.nio.NIOServer;
 import com.steer.socket.udp.UdpSocketClient;
 import com.steer.socket.udp.UpdSocketSender;
 
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 /**
  * @Program: java-io-socket
@@ -43,16 +46,17 @@ public class Main {
         //-------3.开启NIO socket服务端口-------
         NIOServer server = new NIOServer();
         server.initServer(20000);
-        server.listen();
+        new Thread(server).start();
 
         try {
-            Thread.sleep(3000);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         NIOClient client = new NIOClient();
-        client.initClient("localhost",20000);
-        client.listen();
+        client.initClient("192.168.2.171",20000);
+        new Thread(client).start();
+
     }
 }
