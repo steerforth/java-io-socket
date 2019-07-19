@@ -14,7 +14,7 @@ import java.net.Socket;
  */
 public class BIOSocketClient {
     private String host = "192.168.2.171";
-    private int port = 23000;
+    private int port = 10001;
 
     public void run(){
         Socket socket = null;

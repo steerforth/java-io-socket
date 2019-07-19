@@ -1,0 +1,33 @@
+package com.steer.socket.netty;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.AttributeKey;
+import io.netty.util.concurrent.EventExecutorGroup;
+
+import java.nio.charset.Charset;
+
+/**
+ * @program: java-io-socket-master
+ * @Author: Steerforth
+ * @Description:
+ * @Date: Created At 2019-06-25 22:53
+ * @Modified By：
+ */
+public class SimpleClientHandler extends ChannelInboundHandlerAdapter {
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        if (msg instanceof ByteBuf) {
+            String value = ((ByteBuf) msg).toString(Charset.defaultCharset());
+            System.out.println("服务器端返回的数据:" + value);
+        }
+
+        AttributeKey<String> key = AttributeKey.valueOf("ServerData");
+        ctx.channel().attr(key).set("客户端处理完毕");
+
+        //把客户端的通道关闭
+        ctx.channel().close();
+    }
+}

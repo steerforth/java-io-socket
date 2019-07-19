@@ -31,41 +31,41 @@ public class BIOSocketAcquirer implements Runnable {
     @Override
     public void run() {
 
-        try {
-            byte[] data = new byte[100];
-            int len = 0;
-            while((len = in.read(data))!= -1){
-//                System.out.println(new String(data,0,len));
-            }
-            System.out.println("服务端接收到数据:"+HexUtil.bytesToHexString(data));
-            this.socket.shutdownInput();
+            try {
+                byte[] data = new byte[100];
 
-            //response
-            out.write("OKZZ".getBytes("UTF-8"));
-            out.flush();
-            socket.shutdownOutput();
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }finally {
-            try {
-                this.in.close();
+                int len = in.read(data);
+
+                System.out.println("服务端接收到数据:" + HexUtil.bytesToHexString(data));
+                this.socket.shutdownInput();
+                //response
+
+                socket.shutdownOutput();
+
+
+                out.close();
             } catch (IOException e) {
                 e.printStackTrace();
-            }
-            try {
-                this.out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (this.socket != null){
+            } finally {
                 try {
-                    this.socket.close();
+                    this.in.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                try {
+                    this.out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (this.socket != null){
+                    try {
+                        this.socket.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-        }
+
 
     }
 

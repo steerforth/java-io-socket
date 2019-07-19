@@ -13,7 +13,12 @@ import java.net.Socket;
 public class BIOServerSocketListener implements Runnable{
 
     private ServerSocket serverSocket;
-    int port = 23000;
+    int port;
+
+    public BIOServerSocketListener(int port) {
+        this.port = port;
+    }
+
     @Override
     public void run() {
         try {
