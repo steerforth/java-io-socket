@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.net.*;
 import java.util.Date;
 
-public class UdpSocketClient implements Runnable{
+public class UdpSocketServer implements Runnable{
     private boolean terminated = false;
     private int port;
 
-    public UdpSocketClient(int port) {
+    public UdpSocketServer(int port) {
         this.port = port;
     }
 

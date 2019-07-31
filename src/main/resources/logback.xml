@@ -8,7 +8,7 @@
     <!-- ch.qos.logback.core.ConsoleAppender 控制台输出 -->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{36} %line: %msg%n
+            <pattern>[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{36} [line%line]: %msg%n
             </pattern>
         </encoder>
     </appender>
@@ -21,19 +21,13 @@
             <Pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} [%thread] %logger{36} : %n %msg %n</Pattern>
             <charset>UTF-8</charset>  <!--解决中文乱码问题-->
         </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>${LOG_HOME}/${projectName}-%d{yyyy-MM-dd}-%i.log
-            </FileNamePattern>
-            <MaxHistory>10</MaxHistory>
-            <!--
-              当日志文件超过maxFileSize指定的大小是，根据上面提到的%i进行日志文件滚动
-               注意此处配置SizeBasedTriggeringPolicy是无法实现按文件大小进行滚动的，
-               必须配置timeBasedFileNamingAndTriggeringPolicy
-            -->
-            <TimeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <MaxFileSize>5MB</MaxFileSize>
-            </TimeBasedFileNamingAndTriggeringPolicy>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${LOG_HOME}/${projectName}-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+            <!-- each file should be at most 100MB, keep 60 days worth of history, but at most 20GB -->
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
         </rollingPolicy>
     </appender>
 
