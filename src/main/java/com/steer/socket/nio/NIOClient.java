@@ -34,7 +34,10 @@ public class NIOClient implements Runnable{
         System.out.println("客户端轮询启动成功！");
         while (true){
             try {
-                selector.select(1000);
+                int result =  selector.select(1000);
+                if (result == 0){
+                    continue;
+                }
                 Iterator<SelectionKey> iterator = this.selector.selectedKeys().iterator();
                 while (iterator.hasNext()){
                     SelectionKey key = iterator.next();
@@ -71,7 +74,7 @@ public class NIOClient implements Runnable{
 
         channel.write(ByteBuffer.wrap(new String("你好，我是客户端").getBytes("utf-8")));
 
-        channel.register(this.selector,SelectionKey.OP_READ);
+        channel.register(this.selector,SelectionKey.OP_READ,ByteBuffer.allocate(100));
 
     }
 
@@ -79,10 +82,14 @@ public class NIOClient implements Runnable{
         //
         SocketChannel channel = (SocketChannel) key.channel();
         //创建读取的缓冲区
-        ByteBuffer buffer = ByteBuffer.allocate(100);
+//        ByteBuffer buffer = ByteBuffer.allocate(100);
+        ByteBuffer buffer = (ByteBuffer) key.attachment();
+        buffer.rewind();
         int size =channel.read(buffer);
         if (size <= 0){
+            //取消注册
             key.cancel();
+            channel.close();
             System.out.println("客户端端关闭了通道："+channel.socket().toString());
         }else{
             byte[] data = buffer.array();

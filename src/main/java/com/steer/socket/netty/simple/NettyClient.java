@@ -1,15 +1,14 @@
-package com.steer.socket.netty;
+package com.steer.socket.netty.simple;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.Delimiters;
-import io.netty.handler.codec.string.StringEncoder;
-import io.netty.util.AttributeKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @program: java-io-socket-master
@@ -19,6 +18,8 @@ import io.netty.util.AttributeKey;
  * @Modified By：
  */
 public class NettyClient {
+    Logger log = LoggerFactory.getLogger(NettyClient.class);
+
     public void init(String host,int port){
         // 首先，netty通过ServerBootstrap启动服务端
         Bootstrap client = new Bootstrap();
@@ -35,9 +36,9 @@ public class NettyClient {
             @Override
             protected void initChannel(NioSocketChannel ch) throws Exception {
                 //字符串编码器，一定要加在SimpleClientHandler 的上面
-                ch.pipeline().addLast(new StringEncoder());
-                ch.pipeline().addLast(new DelimiterBasedFrameDecoder(
-                        Integer.MAX_VALUE, Delimiters.lineDelimiter()[0]));
+//                ch.pipeline().addLast(new StringEncoder());
+//                ch.pipeline().addLast(new DelimiterBasedFrameDecoder(
+//                        Integer.MAX_VALUE, Delimiters.lineDelimiter()[0]));
                 //找到他的管道 增加他的handler
                 ch.pipeline().addLast(new SimpleClientHandler());
             }
@@ -47,38 +48,30 @@ public class NettyClient {
         ChannelFuture future = null;
         try {
             future = client.connect(host, port).sync();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }finally {
-            try {
-                group.shutdownGracefully().sync();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        //发送数据给服务器
-//        User user = new User();
-//        user.setAge(12);
-//        user.setId(1);
-//        user.setName("sssss");
-//        future.channel().writeAndFlush(JSONObject.toJSONString(user)+"\r\n");
-
-        for(int i=0;i<5;i++){
-            String msg = "ssss"+i+"\r\n";
-            future.channel().writeAndFlush(msg);
-        }
-
-        //当通道关闭了，就继续往下走
-        try {
+            future.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                    if (channelFuture.isSuccess()){
+                        log.info("客户端连接{}:{}成功",host,port);
+                    }else{
+                        log.warn("客户端连接{}:{}失败",host,port);
+                    }
+                }
+            });
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }finally {
+//            try {
+//                group.shutdownGracefully();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
         }
 
         //接收服务端返回的数据
-        AttributeKey<String> key = AttributeKey.valueOf("ServerData");
-        Object result = future.channel().attr(key).get();
-        System.out.println(result.toString());
+//        AttributeKey<String> key = AttributeKey.valueOf("ServerData");
+//        Object result = future.channel().attr(key).get();
+//        System.out.println(result.toString());
     }
 }

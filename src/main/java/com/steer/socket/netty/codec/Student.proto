@@ -1,0 +1,29 @@
+syntax = "proto3"; //版本
+option optimize_for = SPEED; //加快解析
+option java_package = "com.steer.socket.netty.codec"; //指定生成文件到的包路径
+option java_outer_classname = "MyDataInfo"; //外部类名称
+
+
+message MyMessage{
+    enum DataType{
+        StudentType = 0; //proto3 要求enum编号从0开始
+        WorkerType =1;
+    }
+    //用data_type 来标识传的是哪一个枚举类型
+    DataType data_type = 1;
+
+    //表示每次枚举类型最多只能出现其中的一个，节省空间
+    oneof dataBody{
+        Student student = 2;
+        Worker worker = 3;
+    }
+}
+
+message Student{
+    int32 id = 1;//表示属性序号，不是值
+    string name = 2;
+}
+message Woker{
+    string name = 1;
+    int32 age = 2;
+}

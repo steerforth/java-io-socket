@@ -41,6 +41,7 @@
        root与logger是父子关系，没有特别定义则默认为root，任何一个类只会和一个logger对应，
        要么是定义的logger，要么是root，判断的关键在于找到这个logger，然后判断这个logger的appender和level。
    -->
+    <logger name="io.netty" level="INFO"/>
     <!-- 日志级别 -->
     <root>
         <!-- 定义了ERROR和INFO级别的日志，分别在FILE文件和控制台输出 -->
