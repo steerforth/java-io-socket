@@ -58,15 +58,12 @@ public class NettyClient {
                     }
                 }
             });
+            //同步阻塞，直到channel close
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }finally {
-//            try {
-//                group.shutdownGracefully();
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+            group.shutdownGracefully();
         }
 
         //接收服务端返回的数据

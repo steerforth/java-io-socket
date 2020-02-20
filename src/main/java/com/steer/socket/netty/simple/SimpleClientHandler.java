@@ -26,7 +26,6 @@ public class SimpleClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         log.info("客户端通道就绪:{}",ctx);
-
         ctx.channel().writeAndFlush(Unpooled.copiedBuffer("你好，我是客户端",CharsetUtil.UTF_8));
     }
 

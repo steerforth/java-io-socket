@@ -81,6 +81,7 @@ public class NettyServer {
                     }
                 }
             });
+            log.info("服务端 socketchannel hashcode:{}",future.channel().hashCode());
             //当通道关闭了，就继续往下走
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
