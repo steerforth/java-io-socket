@@ -5,6 +5,8 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.util.concurrent.DefaultEventExecutorGroup;
+import io.netty.util.concurrent.EventExecutorGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,10 @@ import org.slf4j.LoggerFactory;
  */
 public class NettyServer {
     Logger log = LoggerFactory.getLogger(NettyServer.class);
+
+    //业务线程池，可以将任务提交到该线程池中,不会阻塞EventLoop线程
+    static final EventExecutorGroup group = new DefaultEventExecutorGroup(16);
+
 
     public void init(int port){
         //netty 通过ServerBootstrap启动服务端,启动引导类
@@ -53,6 +59,9 @@ public class NettyServer {
 //                socketChannel.pipeline().addLast(new SimplePreServerHandler());
                 //把传过来的数据 转换成byteBuf
                 socketChannel.pipeline().addLast(new SimpleServerHandler());
+
+                //!!将handler处理放在线程池中执行，而非默认的IO线程里
+//                socketChannel.pipeline().addLast(group,new SimpleServerHandler());
             }
         });
 
@@ -78,8 +87,8 @@ public class NettyServer {
             e.printStackTrace();
         }finally {
 //            try {
-//                parentGroup.shutdownGracefully();
-//                childGroup.shutdownGracefully();
+                parentGroup.shutdownGracefully();
+                childGroup.shutdownGracefully();
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }

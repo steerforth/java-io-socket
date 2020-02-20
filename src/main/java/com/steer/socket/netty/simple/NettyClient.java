@@ -74,4 +74,8 @@ public class NettyClient {
 //        Object result = future.channel().attr(key).get();
 //        System.out.println(result.toString());
     }
+
+    public static void main(String[] args) {
+        new NettyClient().init("127.0.0.1",8080);
+    }
 }

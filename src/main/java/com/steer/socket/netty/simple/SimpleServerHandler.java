@@ -5,6 +5,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.CharsetUtil;
+import io.netty.util.concurrent.DefaultEventExecutorGroup;
+import io.netty.util.concurrent.EventExecutorGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +21,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class SimpleServerHandler extends ChannelInboundHandlerAdapter {
     Logger log = LoggerFactory.getLogger(SimpleServerHandler.class);
+
+    //业务线程池，可以将任务提交到该线程池中,不会阻塞EventLoop线程
+    static final EventExecutorGroup group = new DefaultEventExecutorGroup(16);
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -40,6 +45,7 @@ public class SimpleServerHandler extends ChannelInboundHandlerAdapter {
 
         //耗时，异步执行->提交该channel对应的NIOEventLoop的taskQueue中
         ctx.channel().eventLoop().execute(()->{
+            //！！执行的线程和EventLoop是同一个线程中
             log.info("我是耗时任务");
         });
 
@@ -47,6 +53,10 @@ public class SimpleServerHandler extends ChannelInboundHandlerAdapter {
         ctx.channel().eventLoop().schedule(()->{
             log.info("我是耗时任务");
         },2,TimeUnit.SECONDS);
+
+        group.submit(()->{
+            log.info("我是耗时任务");
+        });
     }
 
     @Override
