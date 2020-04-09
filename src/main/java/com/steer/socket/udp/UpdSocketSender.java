@@ -1,9 +1,13 @@
 package com.steer.socket.udp;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.*;
 
 public class UpdSocketSender {
+    private Logger log = LoggerFactory.getLogger(UdpSocketServer.class);
     private int port;
     private String host;
 
@@ -19,7 +23,7 @@ public class UpdSocketSender {
             datagramSocket = new DatagramSocket();
             //准备数据，把数据封装到数据包中。
             String data = content;
-            System.out.println("发送端发送内容:"+content);
+            log.info("发送端发送内容:{}",content);
 //            InetAddress a = InetAddress.getLocalHost();
             //创建了一个数据包
             DatagramPacket packet = new DatagramPacket(data.getBytes(), data.getBytes().length, InetAddress.getByName(host) , this.port);
