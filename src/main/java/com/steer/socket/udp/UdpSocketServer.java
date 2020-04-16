@@ -29,8 +29,12 @@ public class UdpSocketServer implements Runnable{
                 log.info("开始接收等待UDP消息...");
                 //调用udp的服务接收数据
                 socket.receive(receivePacket); //receive是一个阻塞型的方法，没有接收到数据包之前会一直等待。
-                log.info("接收端接收到的数据：{}",HexUtil.bytesToHexString(buf));
-                log.info("接收端接收到转码的数据：{}",new String(buf,0,receivePacket.getLength(),"UTF-8")); // getLength() 获取数据包存储了几个字节。
+
+                byte[] rec = new byte[receivePacket.getLength()];
+                System.arraycopy(receivePacket.getData(),0,rec,0,rec.length);
+
+                log.info("接收端接收到的数据：{}",HexUtil.bytesToHexString(rec));
+                log.info("接收端接收到转码的数据：{}",new String(rec,0,rec.length,"UTF-8")); // getLength() 获取数据包存储了几个字节。
 
 
                 byte[] sendBuf = new byte[]{0x01,0x02,0x04};
