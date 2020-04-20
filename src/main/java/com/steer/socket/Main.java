@@ -1,8 +1,5 @@
 package com.steer.socket;
 
-import com.steer.socket.udp.UdpSocketServer;
-import com.steer.socket.udp.UpdSocketSender;
-
 import java.io.IOException;
 
 /**
@@ -23,20 +20,21 @@ public class Main {
 //            e.printStackTrace();
 //        }
 
-//        BIOSocketClient client = new BIOSocketClient();
-//        client.run();
 
+        //------------开启AIO--------------
+//        AIOServer server = new AIOServer();
+//        server.init("127.0.0.1",10001);
 
         //---------2.开启udp socket服务端口 47808--------
-        new Thread(new UdpSocketServer(11111)).start();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        UpdSocketSender sender = new UpdSocketSender(11111,"192.168.2.177");
-        sender.sendMsg("你号,dfdf");
+//        new Thread(new UdpSocketServer(11111)).start();
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//        UpdSocketSender sender = new UpdSocketSender(11111,"192.168.2.177");
+//        sender.sendMsg("你号,dfdf");
 
         //-------3.开启NIO socket服务端口-------
 //        NIOServer server = new NIOServer();
@@ -69,5 +67,7 @@ public class Main {
 //            NettyClient client = new NettyClient();
 //            client.init("127.0.0.1",8080);
 //        }).start();
+
+        System.in.read();
     }
 }

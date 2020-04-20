@@ -13,7 +13,7 @@ import java.net.Socket;
  * @Date: 2018-09-26 19:19
  */
 public class BIOSocketClient {
-    private String host = "192.168.2.171";
+    private String host = "127.0.0.1";
     private int port = 10001;
 
     public void run(){
