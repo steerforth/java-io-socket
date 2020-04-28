@@ -1,5 +1,6 @@
 package com.steer.socket.netty.dubborpc.netty;
 
+import com.steer.socket.netty.dubborpc.framework.Invocation;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -9,8 +10,8 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter implements 
 
     private ChannelHandlerContext context;
 
-    private String result;
-    private String param;
+    private Object result;
+    private Invocation invocation;
 
     /**
      * 初始化
@@ -25,12 +26,13 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter implements 
     @Override
     public synchronized void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         //服务器结果返回
-        result = (String) msg;
+        result = msg;
         notify();
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
         ctx.close();
     }
 
@@ -38,14 +40,18 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter implements 
     @Override
     public synchronized Object call() throws Exception {
         //发送消息
-        context.writeAndFlush(param);
+        context.writeAndFlush(invocation);
         //等待服务器结果返回
         wait();
         //返回结果给调用代理
         return result;
     }
 
-    public void setParam(String param) {
-        this.param = param;
+    public Invocation getInvocation() {
+        return invocation;
+    }
+
+    public void setInvocation(Invocation invocation) {
+        this.invocation = invocation;
     }
 }
