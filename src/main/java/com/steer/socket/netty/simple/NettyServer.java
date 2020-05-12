@@ -98,6 +98,6 @@ public class NettyServer {
 
     public static void main(String[] args) {
         NettyServer server = new NettyServer();
-        server.init(8080);
+        server.init(10001);
     }
 }
