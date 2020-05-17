@@ -29,15 +29,24 @@ public class UpdSocketSender {
             DatagramPacket packet = new DatagramPacket(data.getBytes(), data.getBytes().length, InetAddress.getByName(host) , this.port);
             //调用udp的服务发送数据包
             datagramSocket.send(packet);
-            //关闭资源 ---实际上就是释放占用的端口号
-            datagramSocket.close();
+
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            //关闭资源 ---实际上就是释放占用的端口号
+            if (datagramSocket !=null){
+                datagramSocket.close();
+            }
         }
 
+    }
+
+    public static void main(String[] args) {
+        UpdSocketSender sender = new UpdSocketSender(10001,"127.0.0.1");
+        sender.sendMsg("123");
     }
 }
